@@ -29,6 +29,15 @@ class Siswa {
     public List<Double> getNilai() {
         return nilai;
     }
+
+    public double hitungRataRata() {
+        if (nilai.isEmpty()) return 0.0;
+        double total = 0.0;
+        for (double n : nilai) {
+            total += n;
+        }
+        return total / nilai.size();
+    }
 }
 
 // Kelas PengelolaSiswa - Anggota 3; Mengelola siswa untuk grafik
@@ -46,16 +55,30 @@ class PengelolaSiswa {
 
 // Kelas GrafikPerkembangan - Anggota 3: Tampilkan grafik dan notifikasi
 class GrafikPerkembangan {
-    // Anggota 3: Tampilkan grafik perkembangan nilai siswa
+
+    // Tampilkan grafik perkembangan nilai siswa
     public void tampilkanGrafik(List<Siswa> siswaList) {
-        // Implementasi untuk menampilkan grafik perkembangan nilai siswa
-        System.out.println("Grafik perkembangan nilai siswa (fungsi belum diimplementasikan).");
+        System.out.println("Grafik perkembangan nilai siswa:");
+        for (Siswa siswa : siswaList) {
+            System.out.print(siswa.getNama() + ": ");
+            for (double nilai : siswa.getNilai()) {
+                System.out.print("*"); // Menampilkan bintang untuk setiap nilai
+            }
+            System.out.println(" (Nilai: " + siswa.getNilai() + ", Rata-rata: " + siswa.hitungRataRata() + ")");
+        }
     }
 
-    // Anggota 3: Notifikasi perkembangan siswa
+    // Notifikasi perkembangan siswa
     public void notifikasiPerkembangan(Siswa siswa) {
-        // Implementasi untuk memberikan notifikasi perkembangan
-        System.out.println("Notifikasi perkembangan untuk " + siswa.getNama() + " (fungsi belum diimplementasikan).");
+        double rataRata = siswa.hitungRataRata();
+        System.out.println("Notifikasi perkembangan untuk " + siswa.getNama() + ":");
+        if (rataRata >= 75) {
+            System.out.println("Selamat! Rata-rata Anda adalah " + rataRata + ", sangat baik!");
+        } else if (rataRata >= 50) {
+            System.out.println("Anda berada di jalur yang benar. Rata-rata Anda adalah " + rataRata + ".");
+        } else {
+            System.out.println("Perlu perbaikan. Rata-rata Anda adalah " + rataRata + ".");
+        }
     }
 }
 
@@ -70,18 +93,27 @@ public class SistemPengelolaanNilai {
         String nama = scanner.nextLine();
         System.out.print("Masukkan ID Siswa: ");
         String id = scanner.nextLine();
+
         Siswa siswa = new Siswa(nama, id);
         pengelola.tambahSiswa(siswa);
 
         // Input nilai siswa
-        System.out.print("Masukkan Nilai Siswa: ");
-        double nilai = scanner.nextDouble();
-        siswa.tambahNilai(nilai);
+        System.out.print("Masukkan Nilai Siswa (ketik -1 untuk selesai): ");
 
-        // Tampilkan grafik perkembangan dan notifikasi - Anggota 3
+        while (true) {
+            double nilai = scanner.nextDouble();
+            if (nilai == -1) break; // Menghentikan input jika pengguna mengetik -1
+            siswa.tambahNilai(nilai);
+            System.out.println("Nilai " + nilai + " telah ditambahkan.");
+        }
+
+        // Tampilkan grafik perkembangan dan notifikasi
         GrafikPerkembangan grafik = new GrafikPerkembangan();
         grafik.tampilkanGrafik(pengelola.getSiswaList());
-        grafik.notifikasiPerkembangan(siswa);
+
+        for (Siswa s : pengelola.getSiswaList()) {
+            grafik.notifikasiPerkembangan(s);
+        }
 
         scanner.close();
     }
